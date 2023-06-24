@@ -40,27 +40,59 @@ export class authRepository {
     }
   }
 
-  async postCreate(postDetails:any) {
-    console.log(postDetails, "uuuuuuuuuu");
-    
+  async emailLoginService (email:string) {
     try{
-      const post =   await postModel.create(postDetails)
-      console.log(post, "thish is the post we created");
-      
-    }
-    catch(err){
+const user = await userModel.findOne({email:email})
 
+if(user){
+  return user
+}else{
+  throw { msg: "Invalid Email" };
+}
+    }catch(err){
+      throw{err}
     }
   }
 
+  async findUserById (id: string) {
+    try{
+      const user :any = await userModel.findById({_id: id});
+  
+      return user
+    } catch(err:any) {
+      if(err.kind == "ObjectId") {
+        throw {err: {msg: "Invalid Link"}}
+  
+      }else{
+        throw{err}
+      }
+    }
+  } 
 
-  async getPostsFromDb( ){
+  async userDetails (userId:string) {
+try {
+  const user :any = await userModel.findById({_id: userId});
+
+
+  return user
+} catch (error) {
+  throw{error}
+}
+  }
+
+  async updateUser(userData:any) {
     try {
-      const posts = await postModel.find()
-      console.log(posts);
+      const update = {
+        name: userData.name,
+        bio: userData.bio,
+        image: userData.image,
+      };
       
+      const userId = userData.userId
+      const response = await userModel.findByIdAndUpdate(userId, update, { new: true });
+  
+      return response
       
-      return posts
     } catch (error) {
       throw{error}
     }

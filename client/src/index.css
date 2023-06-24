@@ -4,3 +4,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+ 
+.bg-homebg {
+}

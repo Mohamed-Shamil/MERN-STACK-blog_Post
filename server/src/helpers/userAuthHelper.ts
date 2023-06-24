@@ -4,7 +4,14 @@ import { authRepository } from "../repostitories/userService";
 //USER REPOSITORY
 const authRepo = new authRepository();
 
-const { registerUser, findUserByEmailAndPhone, loginUser,postCreate, getPostsFromDb } = authRepo;
+const {
+  registerUser,
+  findUserByEmailAndPhone,
+  loginUser,
+  userDetails,
+  updateUser,
+  emailLoginService,
+} = authRepo;
 
 export class userAuthHelpers {
   //User Registration
@@ -17,7 +24,6 @@ export class userAuthHelpers {
         if (!response) {
           regDetails.password = await hash(regDetails.password, 10);
           const data = await registerUser(regDetails);
-          console.log(regDetails, "userAuthHelper line 31");
 
           return {
             email: data.email,
@@ -40,20 +46,17 @@ export class userAuthHelpers {
     }
   }
 
+
   //User Login
   async doLogin(loginDetails: any) {
-    console.log(loginDetails, " userAuthHelper 62");
-
     try {
       const credentials = loginDetails.email;
       if (credentials && loginDetails.password) {
         const response = await loginUser(credentials);
 
-        console.log(response, "userauthhelper 69");
-
         if (response && response.password) {
           const auth = await compare(loginDetails.password, response.password);
-          console.log(auth, "userAuthhealper 69");
+
           if (auth) {
             return {
               email: response.email,
@@ -72,31 +75,43 @@ export class userAuthHelpers {
     }
   }
 
-  //Post Creation
-  async createPost(postData:any) {
-    console.log(postData, "hiiiiiiiiiiiiiiii")
+  async emailLoginHelper (email: string) {
+    try {
+      const response = await emailLoginService(email)
+      if(response){
+       
+        
+        return {
+          email: response?.email,
+          id: response?._id,
+          name: response?.name
 
-    try{
-      const data = postData
+        }
+        
+      }else{
+        throw{ msg: "User not found"}
+      }
       
-        const response = postCreate(data)
-        return response
-      
-
-    }
-    catch(err){
-      throw{err}
+    } catch (err:object | any) {
+      throw{ err}
     }
   }
 
-
-  //Finding Posts
-  async getAllPosts() {
+  async userData(userId: string) {
     try {
-      const posts = getPostsFromDb()
-      return posts
+      const response = await userDetails(userId);
+      return response;
     } catch (error) {
-      throw{error}
+      throw { error };
+    }
+  }
+
+  async editProfileHelper(userData: any) {
+    try {
+      const response = await updateUser(userData);
+      return response;
+    } catch (error) {
+      throw { error };
     }
   }
 }

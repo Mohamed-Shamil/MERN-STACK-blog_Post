@@ -31,8 +31,11 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
   },
-  confirmpassword: {
-    type: String,
+  bio:{
+    type:String
+  },
+  image:{
+    type:String
   },
   following: {
     type: Array,

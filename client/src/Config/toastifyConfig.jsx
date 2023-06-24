@@ -1,4 +1,6 @@
 import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const toastifyNotifications = () => {
   const invalidRegToast = () => {
@@ -52,7 +54,33 @@ const toastifyNotifications = () => {
       theme: "dark",
     });
   };
-  return { RegSuccessToast, invalidCredToast, invalidLogin, invalidRegToast };
+
+  const followSuccessToast = () => {
+    toast.success("Followed ", {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+  }
+
+  const followErrorToast = () => {
+    toast.error("unfollowed", {
+      position: "top-right",
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+  };
+  return { RegSuccessToast, invalidCredToast, invalidLogin, invalidRegToast, followErrorToast, followSuccessToast };
 };
 
 export default toastifyNotifications;

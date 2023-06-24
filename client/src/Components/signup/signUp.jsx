@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 //TOASTIFY NOTIFICATIONS
 import toastifyNotifications from "../../Config/toastifyConfig";
+import { ToastContainer } from 'react-toastify';
 const { RegSuccessToast, invalidRegToast, invalidCredToast } =
   toastifyNotifications();
 
@@ -14,34 +15,38 @@ import UserSignupValidation from "../../hooks/signUpValidation";
 import authApi from "../../Api/authApi";
 const { doSignup } = authApi();
 
-function SignUp() {
-  const { errors, handleInputs, isValidForm, signForm } =
-    UserSignupValidation();
+function  SignUp() {
+  const { errors, handleInputs, isValidForm, signForm } = UserSignupValidation();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const formStatus = await isValidForm(e);
+      const formStatus = isValidForm();
+    
       if (!formStatus) {
+        console.log(formStatus);
         invalidRegToast();
         return;
       }
-
+      
      
-      //Registration API Calling
+      // Registration API Calling
       const signupResponse = await doSignup(signForm);
       if (signupResponse) console.log("success");
       RegSuccessToast();
       navigate("/login");
     } catch (error) {
-      console.log(error.message);
+     
+      console.log(error);
       invalidCredToast(error);
     }
   };
+
   return (
     <>
+     <ToastContainer />
       <div>
         <section className="bg-gray-50 dark:bg-gray-900">
           <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">

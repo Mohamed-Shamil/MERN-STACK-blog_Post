@@ -1,31 +1,39 @@
 // eslint-disable-next-line no-unused-vars
-import React from 'react'
-import Preview from '../../Components/preview/preview'
-import Navbar from '../../Components/navbar/navbar'
+import React, { useEffect } from 'react'
+import Previewcomp from '../../Components/preview/preview'
+import Header from '../../Components/navbar/header'
 import Sidebar from '../../Components/sideBar/sidebar'
+import {useSelector} from 'react-redux'
+import {  userReducer } from '../../redux/Slices/userSlice'
+import { useNavigate } from 'react-router-dom'
 
-function preview() {
+
+
+
+function Preview() {
+ 
+  const {accessToken} = useSelector(userReducer)
+  const navigate = useNavigate()
+
+  useEffect(()=>{
+    
+    if(accessToken == undefined || accessToken == ""){
+      navigate('/login')
+    }
+  })
+
+
   return (
-    <div className="bg-homebg">
-    <div className="flex flex-col bg-homebg  dark:bg-homebg">
-    
-        <div className="z-9 ">
-          {/* <!-- Navbar --> */}
-           <Navbar /> 
-        </div>
-    
-    
-        <div className=" flex">
-    
-            <div className=" w-1/6 md:1/3" > <Sidebar /> </div>
-            <div className="w-5/6  md:2/3 flex  mt-24 flex-col justify-center items-center"> 
-            <Preview />
-            </div>
-    
-        </div>
-        </div>
+   
+<div className="flex  h-screen">
+    <Sidebar />
+    <div className="w-full ">
+      <Header />
+      <Previewcomp />
     </div>
+  </div>
+    
   )
 }
 
-export default preview
+export default Preview

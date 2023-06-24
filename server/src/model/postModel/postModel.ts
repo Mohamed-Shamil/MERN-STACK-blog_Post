@@ -1,8 +1,7 @@
 import mongoose, { Types } from "mongoose";
-import validator from "validator"; 
 
 const postSchema = new mongoose.Schema({
-    userId: {
+    authorId: {
         type: String,
         require:true,
     },
@@ -10,11 +9,24 @@ const postSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    image: {
+        type: String,
+        required:true
+    }
+    ,
     title:{
         type: String,
         required: true
     },
-
+    subTitle:{
+        type:String,
+        required:true
+    },
+    likes:[
+        {
+        type:String
+        ,ref:"User"
+    }], 
 },{
     timestamps:true
 })

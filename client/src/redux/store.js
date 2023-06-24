@@ -1,8 +1,8 @@
 import { combineReducers, configureStore} from '@reduxjs/toolkit'
-// import  Storage  from 'redux-persist/lib/storage'
 import {persistReducer } from 'redux-persist'
-import  userReducer  from './userSlice/userSlice'
-import  postReducer  from './postSlice/postSlice'
+import logger from 'redux-logger';
+import  userReducer  from './Slices/userSlice'
+import  postReducer  from './Slices/postSlice'
 import storage from 'redux-persist/lib/storage'
 
 const persistConfig = {
@@ -15,11 +15,13 @@ const reducers = combineReducers({
     postReducer
 })
 
-const persisteReducer = persistReducer( persistConfig, reducers)
+console.log("user reducer data is here", userReducer)
+
+const persistedReducer = persistReducer( persistConfig, reducers)
 
 export const store = configureStore ({
     reducer: {
-        persisteReducer
+         persistedReducer
     },
-    middleware: []
+    middleware: [logger]
 })

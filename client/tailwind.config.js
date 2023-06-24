@@ -1,3 +1,4 @@
+import flowbiteTypography from 'flowbite-typography';
 /** @type {import('tailwindcss').Config} */
 export default {
   mode: 'jit',
@@ -5,6 +6,7 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
 
@@ -31,7 +33,9 @@ export default {
       }
     },
   },
-  plugins: [],
+  plugins: [
+    flowbiteTypography,
+  ],
 
 
     }

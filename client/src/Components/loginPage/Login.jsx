@@ -1,12 +1,15 @@
 // eslint-disable-next-line no-unused-vars
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import GoogleButton from 'react-google-button'
 
 //REDUX
-import { useDispatch } from "react-redux";
-import { setDetails } from "../../redux/userSlice/userSlice";
+import { useDispatch,useSelector } from "react-redux";
+import { userReducer } from "../../redux/Slices/userSlice";
+import { setDetails } from "../../redux/Slices/userSlice";
 
 //TOASTIFY NOTIFICATION
+import { ToastContainer } from "react-toastify";
 import toastifyNotifications from "../../Config/toastifyConfig";
 
 //IMPORT VALIDATION
@@ -15,32 +18,47 @@ import UserLoginValidation from "../../hooks/loginValidation";
 //AUTH API
 import authAPI from "../../Api/authApi";
 
+//FIREBASE CONFIG
+import {auth, provider} from '../../Config/firebase'
+import {signInWithPopup} from 'firebase/auth'
+
+
 function LoginPage() {
+
+  const {token} = useSelector(userReducer)
+  
+  
+
+useEffect(()=>{
+  if(token){
+    navigate('/home')
+  }
+},[])
+  
   const { invalidCredToast, invalidLogin } = toastifyNotifications();
   const { handleInputs, isValidForm, loginForm, errors } =
     UserLoginValidation();
-  const { verifyUser } = authAPI();
+  const { verifyUser,emailLogin } = authAPI();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validForm = await isValidForm(e);
-    console.log(validForm);
     if (!validForm) {
       invalidCredToast();
       return;
     }
     try {
       const emailVerifyResponse = await verifyUser(loginForm);
-      console.log(emailVerifyResponse.data.response._id, "kkkkkkkkkk");
-      localStorage.setItem("userId",emailVerifyResponse.data.response._id)
-      const accessToken = await emailVerifyResponse.accessToken;
-      const { _id, name, email } = emailVerifyResponse.data;
-      console.log(name,_id, email,accessToken, "oooooo")
+      
 
-      dispatch(setDetails({ _id, name, email, accessToken }));
-      console.log("accessToken")
+      const { userId, name, email, accessToken } = emailVerifyResponse.data;
+      
+
+      dispatch(setDetails({ id: userId, name, email, accessToken }));
+
       navigate("/home");
     } catch (error) {
       invalidLogin();
@@ -48,8 +66,25 @@ function LoginPage() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      const data = await signInWithPopup(auth, provider);
+      const mail = data.user.email;
+      const response = await emailLogin(mail);
+      const { userId, name, email, accessToken } = response;
+      dispatch(setDetails({ id: userId, name, email, accessToken }));
+      navigate("/home");
+    } catch (error) {
+      console.error(error);
+      invalidLogin();
+    }
+  };
+  
+
   return (
+
     <>
+      <ToastContainer />
       <section className="bg-gray-50 dark:bg-gray-900">
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <a
@@ -68,6 +103,9 @@ function LoginPage() {
               <h1 className="text-xl font-bold leading-tight text-center tracking-tight text-gray-900 md:text-2xl dark:text-white">
                 Sign in to your account
               </h1>
+            
+            <div className="flex justify-center">  <GoogleButton type="light" onClick={handleGoogleLogin}/></div>
+
               <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
                 <div>
                   <label
@@ -102,7 +140,6 @@ function LoginPage() {
                     name="password"
                     id="password"
                     onChange={handleInputs}
-                    value={loginForm.password}
                     placeholder="••••••••"
                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   />

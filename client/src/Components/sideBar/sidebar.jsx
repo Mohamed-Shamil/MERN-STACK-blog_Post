@@ -1,132 +1,125 @@
 // eslint-disable-next-line no-unused-vars
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { resetDetails } from "../../redux/Slices/userSlice";
+import { useDispatch } from "react-redux";
 
-function Sidebar() {
-  const navigate = useNavigate()
+const Sidebar = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [open, setOpen] = useState(false);
+  const Menus = [
+    { title: "Explore", src: "compass", link: "/home" },
+    { title: "Inbox", src: "chat", link: "/chat" },
+    { title: "Write", src: "content-writing", link: "/addPost" },
+    { title: "Logout", src: "logout", link: "/login" },
+  ];
+
+  const handleButtonClick = (link) => {
+    if (Menus.link == "/login") {
+      handleLogout();
+    }
+    navigate(link);
+  };
+  const toggleSidebar = () => {
+    setOpen(!open);
+  };
+
+  const handleLogout = () => {
+    dispatch(resetDetails());
+    navigate("/login");
+  };
+
   return (
-    <div>
-      <button
-        data-drawer-target="sidebar-multi-level-sidebar "
-        data-drawer-toggle="sidebar-multi-level-sidebar"
-        aria-controls="sidebar-multi-level-sidebar"
-        type="button"
-        className="inline-flex items-center p-2 mt-2 ml-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-700 dark:hover:bg-gray-900 dark:focus:ring-gray-600"
+    <div className=" flex gap-6">
+      {/* Sidebar */}
+      <div
+        className={`${
+          open ? "w-72" : "w-20" 
+        } duration-700 p-5 pt-8 bg-sideclr  sm:block ${
+          open ? "sm:block" : "hidden sm:block"
+        }
+        `}
       >
-        <span className="sr-only">Open sidebar</span>
-        <svg
-          className="w-6 h-6"
-          aria-hidden="true"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            clipRule="evenodd"
-            fillRule="evenodd"
-            d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
-          ></path>
-        </svg>
-      </button>
-      <div className="flex"></div>
-      <aside
-        id="sidebar-multi-level-sidebar"
-        className="fixed top-16  left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
-        aria-label="Sidebar"
+      
+        {/* <div className="flex gap-x-4 items-center">
+          <img
+            src="Images/planet.png"
+            className={`curser-pointer w-8 h-8 duration-500 ${
+              open && "rotate-[-360deg]"
+            } `}
+          />
+          <h1
+            className={`text-exteal origin-left font-bold text-2xl duration-300 ${
+              !open && "scale-0"
+            }`}
+          >
+            Blog Post
+          </h1>
+        </div> */}
+        <div className={`flex justify-end border ${open && "border-2 w-10 ml-56"} border-exteal rounded-full   p-2`}>
+       <img
+          src="Images/right-arrow.png"
+          className={`cursor-pointer rounded-full -right-3 top-9 w-7 border-2 border-sideclr ${
+            open && "rotate-180"
+          }`}
+          onClick={toggleSidebar}
+        />
+       </div>
+        <ul className="pt-6 ">
+          {Menus.map((menu, index) => (
+            <li
+              key={index}
+              className={`text-exteal text-sm  flex items-center gap-x-4 cursor-pointer p-2 hover:bg-green-100 rounded-md ${
+                menu.gap ? "mt-9" : "mt-2 "
+              } ${index === index && open === true && "hover:bg-homebg hover:animate-bounce"}`}
+              onClick={() => {
+                if (menu.link === "/login") {
+                  handleLogout();
+                } else {
+                  handleButtonClick(menu.link);
+                }
+              }}
+            >
+              <img className="w-9" src={`Images/${menu.src}.png`} />
+              <span
+                style={{ transitionDelay: `${index + 3}00ms` }}
+                className={`${
+                  !open && "opacity-0 translate-x-28 "
+                } whitespace-pre origin-left duration-500`}
+              >
+                {menu.title}
+              </span>
+            </li>
+          ))}
+        </ul>
+       
+      </div>
+
+      {/* Bottom bar */}
+      <div
+      
+        className={`flex  w-full fixed bottom-0 left-0 bg-sideclr h text-white justify-between items-center px-4 py-1 sm:hidden`}
       >
-        <div className="h-full px-3 py-4 overflow-y-auto bg-sideclr dark:bg-gray-800">
-          <ul className="space-y-2 font-medium">
-            <li>
-              <a
-                href="#"
-                onClick={()=>{navigate('/home')}}
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <svg
-                  aria-hidden="true"
-                  className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                </svg>
-                <span className="flex-1 ml-3 whitespace-nowrap">Explore</span>
-                <span className="inline-flex items-center justify-center px-2 ml-3 text-sm font-medium text-gray-800 bg-gray-200 rounded-full dark:bg-gray-700 dark:text-gray-300">
-                  Pro
-                </span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <svg
-                  aria-hidden="true"
-                  className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"></path>
-                  <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"></path>
-                </svg>
-                <span className="flex-1 ml-3 whitespace-nowrap">Inbox</span>
-                <span className="inline-flex items-center justify-center w-3 h-3 p-3 ml-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
-                  3
-                </span>
-              </a>
-            </li>
-            {/* <li>
-              <a
-                href="#"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <svg
-                  aria-hidden="true"
-                  className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
-                <span className="flex-1 ml-3 whitespace-nowrap">Users</span>
-              </a>
-            </li> */}
-        
-            <li>
-              <a
-                href="#"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <svg
-                  aria-hidden="true"
-                  className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
-                <span className="flex-1 ml-3 whitespace-nowrap">Sign Out</span>
-              </a>
-            </li>
-        
-          </ul>
-        </div>
-      </aside>
+        {Menus.map((menu, index) => (
+          <div key={index} className="flex items-center gap-x-2 p-1">
+            <img
+              src={`Images/${menu.src}.png`}
+              onClick={() => handleButtonClick(menu.link)}
+              className="w-9 h-9"
+            />
+            {/* <span>{menu.title}</span> */}
+          </div>
+        ))}
+        {/* <img
+          src="Images/right-chevron.png"
+          className="cursor-pointer w-6 h-6 transform rotate-180"
+          onClick={toggleSidebar}
+        /> */}
+      </div>
     </div>
   );
-}
+};
 
 export default Sidebar;

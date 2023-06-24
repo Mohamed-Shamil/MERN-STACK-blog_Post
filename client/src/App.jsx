@@ -1,5 +1,6 @@
 import { BrowserRouter } from "react-router-dom";
 import UserRouter from "./Routes/userRouter";
+import AdminRouter from './Routes/adminRouter'
 
 import "./App.css";
 
@@ -8,6 +9,7 @@ function App() {
     <>
       <BrowserRouter>
         <UserRouter />
+        <AdminRouter/>
       </BrowserRouter>
     </>
   );

@@ -1,13 +1,19 @@
 // eslint-disable-next-line no-unused-vars
-import React from 'react'
-import LoginPage from '../../Components/loginPage/Login'
+import React, { useEffect } from 'react'
+import Login from '../../Components/loginPage/Login'
 
-function loginPage() {
+
+
+function LoginPage() {
+
+  
+
+
   return (
    <>
-   <LoginPage/>
+   <Login/>
    </>
   )
 }
 
-export default loginPage
+export default LoginPage

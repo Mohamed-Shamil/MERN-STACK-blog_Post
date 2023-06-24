@@ -1,57 +1,127 @@
-import {  useEffect, useState } from "react";
-
-import authAPI from '../../Api/authApi'
+// eslint-disable-next-line no-unused-vars
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import authAPI from "../../Api/authApi";
 
 
 export default function Content() {
-
-  const {getPost} = authAPI()
-  const [post,setPost] = useState()
-
-
-useEffect(()=>{
-  getPost()
-  const posts =  ( async ()=> {
-    const {data} = await getPost()
-    console.log(data);
-    setPost(data);
-  })
-  posts()
-},[])
+  const { getPost, getBlog } = authAPI();
+  const navigate = useNavigate();
+  const [post, setPost] = useState();
 
 
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const response = await getPost();
+       
 
-  
+        let data = response.map((post) => {
+          const { _id, author, title, subTitle, imageUrl, content, authorImageUrl, createdAt } = post;
+          console.log(authorImageUrl);
+
+          const maxWords = 12;
+          const contentWords = content.split(" ");
+          const limitedContent = contentWords.slice(0, maxWords).join(" ");
+          const displayContent = contentWords.length > maxWords? `${limitedContent}...`: limitedContent;
+
+          const createdOn = new Date (createdAt)
+          const formatedDate = createdOn.toLocaleDateString("en-us",{
+           
+            month:"short",
+            day:"numeric",
+           
+          })
+
+          return {
+            _id,
+            author,
+            title,
+            subTitle,
+            imageUrl,
+            authorImageUrl,
+            content: displayContent,
+            createdAt:formatedDate
+          };
+        });
+
+        setPost(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchPost();
+  }, []);
+
+  const handleBlog = async (postId) => {
+    const response = await getBlog(postId);
+    if (response) {
+      navigate("/blog", { state: { postId } });
+    }
+  };
+
 
   return (
     <>
-
+      <div className="p-4 sm:ml-48 overflow-scroll h-[95%] px-4 py-8">
      
-      
-<div className="gap-2 ">
-  {post?.map((obj) => (
-    <div key={obj._id} className="max-w-md max-h p-6 mt-5 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-      <a href="#" className="mt-5">
-        <h5 className="mb-2 text-2xl  font-bold tracking-tight text-gray-900 dark:text-white">{obj.title}</h5>
-      </a>
-      <div dangerouslySetInnerHTML={{ __html: obj.content }}></div>
-      {/* <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{obj.content}</p> */}
-      <a href="#" className="inline-flex mt-5 items-center px-3 py-2 text-sm font-medium text-center text-white bg-teal-700 rounded-lg hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-        Read more
-        <svg aria-hidden="true" className="w-4 h-4 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
-        </svg>
-      </a>
-    </div>
-  ))}
-</div>
+        <div className="gap-2">
+          {post?.map((obj) => (
+            
+            <div
+            key={obj._id}
+            className="max-w-2xl mt-5 flex  rounded-sm  border-b border-gray-400 dark:bg-gray-800 dark:border-gray-700"
+            >
+         
+              
+              <div className="flex flex-col w-5/6 justify-between p-6">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 mr-2">
+                            <img
+              src={obj?.authorImageUrl && obj?.authorImageUrl ? obj?.authorImageUrl: "Images/user.png"}
+             
+              className="w-14 mt-2 rounded-full h-14"
+              alt="Profile"
+            />
+                          </div>
+                          <div>
+                            <p className="text-gray-900 font-medium">{obj.author} &nbsp;</p>
+                          </div>
+            <p className="text-sm mt-1 text-gray-500 font-serif"> Created on  {obj.createdAt}</p>
+                        </div>
+                <div className="mt-2">
+                  <a href="#" onClick={() => handleBlog(obj._id)} className="hover:underline">
+                    <h5 className="mb-2 text-2xl font-medium tracking-tight font-serif text-gray-900 dark:text-white">
+                      {obj.title}
+                    </h5>
 
-
-        
-     
-   
-  </>
-  
-
-  );
-}
+                  <div className="text-gray-500 mb-4">
+                    {obj.subTitle ? (
+                      <h2 className="text-lg hover:underline font-extralight font-serif mb-2">{obj.subTitle}</h2>
+                      ) : null}
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: obj.subTitle ? "" : obj.content,
+                      }}
+                      ></div>
+                  </div>
+                </a>
+                      
+                </div>
+              
+              </div>
+              {obj.imageUrl && (
+                <img
+                onClick={() => handleBlog(obj._id)}
+                className="w-1/3  object-cover p-5 object-center"
+                src={obj.imageUrl}
+                alt="Post Image"
+                />
+              )}
+            </div>
+           ))}
+        </div>
+      </div>
+      </>
+      );
+    }
